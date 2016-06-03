@@ -1,8 +1,36 @@
-var CommentList = React.createClass({
+var data = [
+  {id: 1, author: "David", text: "This is one comment"},
+  {id: 2, author: "Rebecca", text: "This is *another* comment"}
+];
+
+var Comment = React.createClass({
+  rawMarkup: function() {
+    var rawMarkup = marked(this.props.children.toString(), {sanitize: true})
+    return { __html: rawMarkup };
+  },
+
   render: function() {
     return (
+      <div class="comment">
+        <h2 class="commentAuthor">
+          {this.props.author}
+        </h2>
+        <span dangerouslySetInnerHTML={this.rawMarkup()} />
+      </div>
+    )
+  }
+});
+
+var CommentList = React.createClass({
+  render: function() {
+    var commentNodes = this.props.data.map(function(comment) {
+      return (
+        <Comment author={comment.author} key={comment.id}>{comment.text}</Comment>
+      )
+    });
+    return (
       <div className="commentList">
-        Comment List
+        {commentNodes}
       </div>
     )
   }
@@ -23,7 +51,7 @@ var CommentBox = React.createClass({
     return (
       <div className="commentBox">
         <h1>Comments</h1>
-        <CommentList />
+        <CommentList data={this.props.data} />
         <CommentForm />
       </div>
     )
@@ -31,6 +59,6 @@ var CommentBox = React.createClass({
 });
 
 ReactDOM.render(
-  <CommentBox />,
+  <CommentBox data={data} />,
   document.getElementById("content")
 );
